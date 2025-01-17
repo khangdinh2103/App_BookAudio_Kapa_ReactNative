@@ -26,7 +26,7 @@ const LoginScreen = (props) => {
   }, [navigation]);
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [username, setUsername] = useState(""); // State lưu trữ username
+  const [email, setEmail] = useState(""); // State lưu trữ username
   const [password, setPassword] = useState(""); // State lưu trữ password
   const [isLogin, setIsLogin] = useState(false);
   const [userId, setUserId] = useState("");
@@ -35,27 +35,27 @@ const LoginScreen = (props) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://172.20.10.2:5000/api/v1/auth/login', {
-        email: username,
+      const response = await axios.post('http://192.168.1.8:3000/api/v1/login', {
+        email: email,
         password: password,
       });
 
-      if (response.data.err === 0) {
+      if (response.data.token) {
         setIsLogin(true);
         setToken(response.data.token);
-        setUserId(response.data.data.id);
+        setUserId(response.data.user.id);
         // Alert.alert("Login Successful", "You have logged in successfully.");
-        Alert.alert("Đăng nhập thành công!", `Chào mừng,  ${response.data.data.name}`);
+        Alert.alert("Đăng nhập thành công!", `Chào mừng,  ${response.data.user.name}`);
         navigation.navigate('MyTabs', {
                 user: {
-                    id: response.data.data.id,
-                    name: response.data.data.name,
-                    email: response.data.data.email,
+                    id: response.data.user.id,
+                    name: response.data.user.name,
+                    email: response.data.user.email,
                 },
             });
       } else {
         Alert.alert("Đăng nhập không thành công", response.data.message);
-       setUsername("");
+       setEmail("");
         setPassword("");
       }
     } catch (error) {
@@ -89,8 +89,8 @@ const LoginScreen = (props) => {
               <TextInput
                 style={styles.inputText}
                 placeholder="email"
-                value={username}
-                onChangeText={(text) => setUsername(text)} // Cập nhật state username
+                value={email}
+                onChangeText={(text) => setEmail(text)} // Cập nhật state username
               />
               <Icon name="user" size={20} color="#A3A3A3" />
             </View>

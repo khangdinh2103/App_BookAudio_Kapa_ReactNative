@@ -22,7 +22,7 @@ export default class ScreenRank extends Component {
     // Hàm fetch danh sách sách từ API
     fetchBookList = async () => {
         try {
-            const response = await axios.get('http://172.20.10.2:5000/api/v1/book/ranking');
+            const response = await axios.get('http://192.168.1.8:3000/api/v1/books');
             this.setState({ books: response.data, loading: false });
         } catch (error) {
             console.error('Error fetching books:', error);

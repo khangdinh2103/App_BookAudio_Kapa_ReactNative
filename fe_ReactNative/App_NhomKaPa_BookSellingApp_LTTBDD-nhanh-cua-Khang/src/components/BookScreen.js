@@ -28,7 +28,7 @@ export default function BookScreen({ navigation }) {
 
     const fetchBookList = async () => {
         try {
-            const response = await axios.get('http://172.20.10.2:5000/api/v1/book/ranking');
+            const response = await axios.get('http://192.168.1.8:3000/api/v1/books');
             setBooks(response.data);
         } catch (error) {
             console.error('Error fetching books:', error);

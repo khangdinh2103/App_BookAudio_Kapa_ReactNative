@@ -1,9 +1,10 @@
 const bcrypt = require('bcrypt'); // Dùng để kiểm tra mật khẩu
+const jwt = require('jsonwebtoken'); // Dùng để tạo token
 const connection = require('../config/DataBase');
 
 const login = (req, res) => {
-    console.log(req.body);
-    const { email, password } = req.body ;
+
+    const { email, password } = req.body;
 
     // Kiểm tra xem thông tin đầu vào có hợp lệ không
     if (!email || !password) {
@@ -35,9 +36,17 @@ const login = (req, res) => {
                     return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng!' });
                 }
 
-                // Nếu mật khẩu khớp, trả về thông tin người dùng (có thể bỏ thông tin nhạy cảm như password)
+                // Tạo token nếu mật khẩu khớp
+                const token = jwt.sign(
+                    { id: user.id, email: user.email },
+                    process.env.SECRET_KEY,  // Lưu secret key trong file .env
+                    { expiresIn: '1d' }  // Thời gian hết hạn của token (1 ngày)
+                );
+
+                // Nếu mật khẩu khớp, trả về thông tin người dùng và token
                 res.status(200).json({
                     message: 'Đăng nhập thành công!',
+                    token: token,
                     user: {
                         id: user.id,
                         name: user.name,
