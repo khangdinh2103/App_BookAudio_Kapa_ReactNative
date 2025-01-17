@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "App_KaPa_SellBookAudio",
+    "slug": "App_KaPa_SellBookAudio",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/BookScreen/logo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/BookScreen/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#504B72"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/BookScreen/logo.png",
+        "backgroundColor": "#504B72"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "newArchEnabled": true,
+    "plugins": [
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
+      ]
+    ]
+  }
+}
