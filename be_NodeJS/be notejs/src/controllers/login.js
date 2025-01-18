@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt'); // Dùng để kiểm tra mật khẩu
 const jwt = require('jsonwebtoken'); // Dùng để tạo token
 const connection = require('../config/DataBase');
+const { v4: uuidv4 } = require('uuid');
 
 const login = (req, res) => {
 
@@ -63,4 +64,60 @@ const login = (req, res) => {
     );
 };
 
-module.exports = { login };
+const register = (req, res) => {
+    const { email, password, name } = req.body;
+
+    // Kiểm tra thông tin đầu vào
+    if (!email || !password || !name) {
+        return res.status(400).json({ message: 'Email, mật khẩu và tên là bắt buộc!' });
+    }
+
+    // Kiểm tra xem email đã tồn tại chưa
+    connection.query(
+        'SELECT * FROM `users` WHERE email = ?',
+        [email],
+        (err, results) => {
+            if (err) {
+                return res.status(500).json({ message: 'Lỗi hệ thống!' });
+            }
+
+            if (results.length > 0) {
+                return res.status(409).json({ message: 'Email đã tồn tại!' }); // Email đã tồn tại
+            }
+
+            // Nếu email chưa tồn tại, tiến hành hash mật khẩu và tạo người dùng mới
+            const hashedPassword = bcrypt.hashSync(password, 10); // Hash mật khẩu với salt round là 10
+            const userId = uuidv4(); // Tạo UUID cho user
+
+            connection.query(
+                'INSERT INTO `users` (id, email, password, name) VALUES (?, ?, ?, ?)',
+                [userId, email, hashedPassword, name],
+                (insertErr, insertResults) => {
+                    if (insertErr) {
+                        return res.status(500).json({ message: 'Lỗi hệ thống khi tạo người dùng!' });
+                    }
+
+                    // Tạo token sau khi đăng ký thành công
+                    const token = jwt.sign(
+                        { id: userId, email },
+                        process.env.SECRET_KEY, // Lấy secret key từ file .env
+                        { expiresIn: '2d' } // Token hết hạn sau 2 ngày
+                    );
+
+                    // Trả về thông tin người dùng và token
+                    res.status(201).json({
+                        message: 'Đăng ký thành công!',
+                        token: token,
+                        user: {
+                            id: userId,
+                            name: name,
+                            email: email,
+                        },
+                    });
+                }
+            );
+        }
+    );
+};
+
+module.exports = { login, register };
